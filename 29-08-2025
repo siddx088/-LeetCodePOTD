@@ -1,0 +1,11 @@
+class Solution {
+public:
+    long long flowerGame(int n, int m) {
+        long long odd_n  = (n + 1) / 2; // count of odds in [1..n]
+        long long even_n = n / 2;       // count of evens in [1..n]
+        long long odd_m  = (m + 1) / 2; // count of odds in [1..m]
+        long long even_m = m / 2;       // count of evens in [1..m]
+        // Alice wins when x + y is odd
+        return odd_n * even_m + even_n * odd_m;
+    }
+};
