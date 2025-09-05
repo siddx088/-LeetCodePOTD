@@ -1,0 +1,14 @@
+class Solution {
+public:
+    int makeTheIntegerZero(int num1, int num2) {
+        for (long long k = 1; k <= 60; k++) { // try possible number of operations
+            long long x = num1 - k * 1LL * num2;
+            if (x < k) continue; // can't split into k powers of 2
+            int bits = __builtin_popcountll(x);
+            if (bits <= k && k <= x) {
+                return (int)k;
+            }
+        }
+        return -1;
+    }
+};
