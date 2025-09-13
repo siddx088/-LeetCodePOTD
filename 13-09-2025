@@ -1,0 +1,22 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    int maxFreqSum(string s) {
+        vector<int> freq(26, 0);
+        for (char c : s) freq[c - 'a']++;
+
+        bool isVowel[26] = {false};
+        for (char v : string("aeiou")) isVowel[v - 'a'] = true;
+
+        int maxV = 0, maxC = 0;
+        for (int i = 0; i < 26; ++i) {
+            if (isVowel[i]) maxV = max(maxV, freq[i]);
+            else maxC = max(maxC, freq[i]);
+        }
+        return maxV + maxC;
+    }
+};
