@@ -1,0 +1,21 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+class Solution {
+public:
+    vector<int> replaceNonCoprimes(vector<int>& nums) {
+        vector<int> st;  // stack to store the result
+
+        for (int num : nums) {
+            // merge with stack top while non-coprime
+            while (!st.empty() && gcd(st.back(), num) > 1) {
+                long long g = gcd(st.back(), num);
+                num = (long long)st.back() * num / g;  // LCM
+                st.pop_back();
+            }
+            st.push_back(num);
+        }
+
+        return st;
+    }
+};
