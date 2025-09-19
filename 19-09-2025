@@ -1,0 +1,36 @@
+class Spreadsheet:
+
+    def __init__(self, rows: int):
+        # 26 columns A-Z, rows given
+        self.rows = rows
+        self.cols = 26
+        # 2D grid initialized with zeros
+        self.grid = [[0] * self.cols for _ in range(rows)]
+
+    def setCell(self, cell: str, value: int) -> None:
+        col, row = self._parseCell(cell)
+        self.grid[row][col] = value
+
+    def resetCell(self, cell: str) -> None:
+        col, row = self._parseCell(cell)
+        self.grid[row][col] = 0
+
+    def getValue(self, formula: str) -> int:
+        # formula always like "=X+Y"
+        formula = formula[1:]  # remove '='
+        left, right = formula.split("+")
+        return self._getOperandValue(left) + self._getOperandValue(right)
+
+    # ----------------- Helpers ----------------- #
+    def _parseCell(self, cell: str):
+        # col is a single uppercase letter A-Z
+        col = ord(cell[0]) - ord('A')
+        row = int(cell[1:]) - 1  # convert 1-indexed to 0-indexed
+        return col, row
+
+    def _getOperandValue(self, operand: str) -> int:
+        if operand[0].isalpha():
+            col, row = self._parseCell(operand)
+            return self.grid[row][col]
+        else:
+            return int(operand)
