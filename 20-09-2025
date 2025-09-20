@@ -1,0 +1,60 @@
+from collections import deque, defaultdict
+import bisect
+
+class Router:
+    def __init__(self, memoryLimit: int):
+        self.memoryLimit = memoryLimit
+        self.queue = deque()   # store packets in FIFO order
+        self.seen = set()      # detect duplicates (source, destination, timestamp)
+        self.dest_map = defaultdict(list)  # destination -> sorted timestamps (increasing order)
+
+    def addPacket(self, source: int, destination: int, timestamp: int) -> bool:
+        key = (source, destination, timestamp)
+        if key in self.seen:   # duplicate packet
+            return False
+        
+        # if memory is full, remove oldest
+        if len(self.queue) >= self.memoryLimit:
+            old_source, old_dest, old_time = self.queue.popleft()
+            self.seen.remove((old_source, old_dest, old_time))
+            
+            # remove timestamp from dest_map[old_dest]
+            arr = self.dest_map[old_dest]
+            idx = bisect.bisect_left(arr, old_time)
+            if idx < len(arr) and arr[idx] == old_time:
+                arr.pop(idx)
+            if not arr:
+                del self.dest_map[old_dest]
+
+        # add new packet
+        self.queue.append((source, destination, timestamp))
+        self.seen.add(key)
+        self.dest_map[destination].append(timestamp)  # timestamps are increasing
+        return True
+
+    def forwardPacket(self) -> list[int]:
+        if not self.queue:
+            return []
+        
+        source, dest, ts = self.queue.popleft()
+        self.seen.remove((source, dest, ts))
+        
+        # remove timestamp from dest_map[dest]
+        arr = self.dest_map[dest]
+        idx = bisect.bisect_left(arr, ts)
+        if idx < len(arr) and arr[idx] == ts:
+            arr.pop(idx)
+        if not arr:
+            del self.dest_map[dest]
+        
+        return [source, dest, ts]
+
+    def getCount(self, destination: int, startTime: int, endTime: int) -> int:
+        if destination not in self.dest_map:
+            return 0
+        
+        arr = self.dest_map[destination]
+        # binary search range [startTime, endTime]
+        left = bisect.bisect_left(arr, startTime)
+        right = bisect.bisect_right(arr, endTime)
+        return right - left
