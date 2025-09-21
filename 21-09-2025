@@ -1,0 +1,43 @@
+from sortedcontainers import SortedList
+from collections import defaultdict
+
+class MovieRentingSystem:
+    def __init__(self, n: int, entries: list[list[int]]):
+        # Store price for each (shop, movie)
+        self.price_map = {}
+        # Unrented movies by movie -> sorted list of (price, shop)
+        self.unrented = defaultdict(SortedList)
+        # Rented movies sorted by (price, shop, movie)
+        self.rented = SortedList()
+        
+        for shop, movie, price in entries:
+            self.price_map[(shop, movie)] = price
+            self.unrented[movie].add((price, shop))
+
+    def search(self, movie: int) -> list[int]:
+        # Return up to 5 shops with cheapest unrented copy
+        res = []
+        for price, shop in self.unrented[movie][:5]:
+            res.append(shop)
+        return res
+
+    def rent(self, shop: int, movie: int) -> None:
+        price = self.price_map[(shop, movie)]
+        # Remove from unrented
+        self.unrented[movie].remove((price, shop))
+        # Add to rented
+        self.rented.add((price, shop, movie))
+
+    def drop(self, shop: int, movie: int) -> None:
+        price = self.price_map[(shop, movie)]
+        # Remove from rented
+        self.rented.remove((price, shop, movie))
+        # Add back to unrented
+        self.unrented[movie].add((price, shop))
+
+    def report(self) -> list[list[int]]:
+        # Return up to 5 cheapest rented movies
+        res = []
+        for price, shop, movie in self.rented[:5]:
+            res.append([shop, movie])
+        return res
