@@ -1,0 +1,26 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+class Solution {
+public:
+    int maxFrequencyElements(vector<int>& nums) {
+        unordered_map<int, int> freq;
+        int maxFreq = 0;
+
+        // Count frequency of each number
+        for (int num : nums) {
+            freq[num]++;
+            maxFreq = max(maxFreq, freq[num]);
+        }
+
+        int result = 0;
+        // Sum up all occurrences of numbers with max frequency
+        for (auto& [key, count] : freq) {
+            if (count == maxFreq) {
+                result += count;
+            }
+        }
+
+        return result;
+    }
+};
